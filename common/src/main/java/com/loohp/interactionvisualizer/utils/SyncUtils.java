@@ -32,7 +32,6 @@ public class SyncUtils {
         if (InteractionVisualizer.plugin.isEnabled()) {
             FoliaUtil.scheduler.runTask(loc, () -> {
                 if (syncCondition.check()) {
-                    asyncTask.run();
                     InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
                 }
             });
