@@ -51,6 +51,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
 import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
@@ -150,7 +151,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                         }
                     }
                     for (Item item : items) {
-                        SyncUtils.runAsyncWithSyncCondition(item::isValid, () -> tick(item, items));
+                        SyncUtils.runAsyncWithSyncCondition(
+                                item.getLocation(),
+                                item::isValid,
+                                () -> FoliaUtil.scheduler.runTask(item, () -> tick(item, items))
+                        );
                     }
                 }
             }

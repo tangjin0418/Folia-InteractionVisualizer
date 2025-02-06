@@ -139,13 +139,15 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyLectern();
                 for (Block block : list) {
-                    if (lecternMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.LECTERN)) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            lecternMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (lecternMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.LECTERN)) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                lecternMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

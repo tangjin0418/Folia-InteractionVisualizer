@@ -158,13 +158,15 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbySoulCampfire();
                 for (Block block : list) {
-                    if (soulcampfireMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.SOUL_CAMPFIRE)) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            soulcampfireMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (soulcampfireMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.SOUL_CAMPFIRE)) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                soulcampfireMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

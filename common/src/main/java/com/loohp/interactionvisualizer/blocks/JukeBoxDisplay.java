@@ -127,13 +127,15 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyJukeBox();
                 for (Block block : list) {
-                    if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.JUKEBOX)) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            jukeboxMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.JUKEBOX)) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                jukeboxMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

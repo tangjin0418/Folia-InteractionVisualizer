@@ -135,13 +135,15 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbySpawner();
                 for (Block block : list) {
-                    if (spawnerMap.get(block) == null && isActive(block.getLocation())) {
-                        if (isSpawner(block.getType())) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            spawnerMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (spawnerMap.get(block) == null && isActive(block.getLocation())) {
+                            if (isSpawner(block.getType())) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                spawnerMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

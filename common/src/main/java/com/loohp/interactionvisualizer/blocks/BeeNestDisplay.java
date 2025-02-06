@@ -145,13 +145,15 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBeenest();
                 for (Block block : list) {
-                    if (beenestMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.BEE_NEST)) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            beenestMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (beenestMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.BEE_NEST)) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                beenestMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

@@ -41,6 +41,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -189,8 +190,11 @@ public class InteractionVisualizer extends JavaPlugin {
         defaultWorld = new WeakReference<>(getServer().getWorlds().get(0));
         defaultLocation = new Location(getDefaultWorld(), 0, 0, 0);
         if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
-            Sync(new Location(getDefaultWorld(),0, 0, 0), () -> {
-                getDefaultWorld().setChunkForceLoaded(0, 0, true);
+            Sync(new Location(getDefaultWorld(), 0, 0, 0), () -> {
+                Chunk chunk = getDefaultWorld().getChunkAt(0, 0);
+                Sync(() -> {
+                    chunk.setForceLoaded(true);
+                });
             });
         }
 
@@ -219,11 +223,13 @@ public class InteractionVisualizer extends JavaPlugin {
         }
 
         for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getNearbyEntities(new Location(world, 0, 0, 0), 2, 2, 2)) {
-                if (entity.getScoreboardTags().contains("isInteractionVisualizer")) {
-                    entity.remove();
+            Sync(new Location(world, 0, 0, 0), () -> {
+                for (Entity entity : world.getNearbyEntities(new Location(world, 0, 0, 0), 2, 2, 2)) {
+                    if (entity.getScoreboardTags().contains("isInteractionVisualizer")) {
+                        entity.remove();
+                    }
                 }
-            }
+            });
         }
 
         exemptBlocks.add("CRAFTING_TABLE");

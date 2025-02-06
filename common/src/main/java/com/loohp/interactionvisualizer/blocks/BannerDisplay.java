@@ -137,14 +137,16 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBanner();
                 for (Block block : list) {
-                    if (bannerMap.get(block) == null && isActive(block.getLocation())) {
-                        if (isBanner(block.getType())) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            bannerMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (bannerMap.get(block) == null && isActive(block.getLocation())) {
+                            if (isBanner(block.getType())) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                bannerMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

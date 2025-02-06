@@ -157,14 +157,16 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyFurnace();
                 for (Block block : list) {
-                    if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
-                        if (isFurnace(block.getType())) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            furnaceMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
+                            if (isFurnace(block.getType())) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                furnaceMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

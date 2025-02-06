@@ -137,14 +137,16 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyConduit();
                 for (Block block : list) {
-                    if (conduitMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.CONDUIT)) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            conduitMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (conduitMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.CONDUIT)) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                conduitMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

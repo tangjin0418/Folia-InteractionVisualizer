@@ -145,13 +145,15 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBeehive();
                 for (Block block : list) {
-                    if (beehiveMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.BEEHIVE)) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            beehiveMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (beehiveMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.BEEHIVE)) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                beehiveMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

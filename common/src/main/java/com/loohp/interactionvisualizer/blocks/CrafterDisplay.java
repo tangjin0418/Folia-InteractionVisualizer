@@ -134,12 +134,14 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyCrafter();
                 for (Block block : list) {
-                    if (crafterMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.CRAFTER) && getCardinalDirection(block) >= 0F) {
-                            Map<String, Object> map = new HashMap<>(spawnArmorStands(block));
-                            crafterMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (crafterMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.CRAFTER) && getCardinalDirection(block) >= 0F) {
+                                Map<String, Object> map = new HashMap<>(spawnArmorStands(block));
+                                crafterMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

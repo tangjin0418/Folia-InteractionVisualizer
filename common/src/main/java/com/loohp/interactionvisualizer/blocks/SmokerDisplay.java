@@ -157,14 +157,16 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbySmoker();
                 for (Block block : list) {
-                    if (smokerMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.SMOKER)) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            smokerMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (smokerMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.SMOKER)) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                smokerMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

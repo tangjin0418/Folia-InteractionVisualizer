@@ -23,18 +23,16 @@ package com.loohp.interactionvisualizer.utils;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.Condition;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 public class SyncUtils {
 
-    public static void runAsyncWithSyncCondition(Condition syncCondition, Runnable asyncTask) {
-        if (Bukkit.isPrimaryThread()) {
-            if (syncCondition.check()) {
-                InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
-            }
-        } else if (InteractionVisualizer.plugin.isEnabled()) {
-            FoliaUtil.scheduler.runTask(() -> {
+    public static void runAsyncWithSyncCondition(Location loc, Condition syncCondition, Runnable asyncTask) {
+        if (InteractionVisualizer.plugin.isEnabled()) {
+            FoliaUtil.scheduler.runTask(loc, () -> {
                 if (syncCondition.check()) {
+                    asyncTask.run();
                     InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
                 }
             });

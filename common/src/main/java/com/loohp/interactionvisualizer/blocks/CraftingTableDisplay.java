@@ -93,48 +93,46 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                         delay++;
                     }
                     Block block = itr.next();
-                    new UniversalRunnable() {
-                        public void run() {
-                            if (!openedBenches.containsKey(block)) {
-                                return;
-                            }
-                            Map<String, Object> map = openedBenches.get(block);
+                    FoliaUtil.scheduler.runTaskLater(block.getLocation(), () -> {
+                        if (!openedBenches.containsKey(block)) {
+                            return;
+                        }
+                        Map<String, Object> map = openedBenches.get(block);
 
-                            Player player = (Player) map.get("Player");
-                            if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-                                if (player.getOpenInventory() != null) {
-                                    if (player.getOpenInventory().getTopInventory() != null) {
-                                        if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-                                            if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
+                        Player player = (Player) map.get("Player");
+                        if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+                            if (player.getOpenInventory() != null) {
+                                if (player.getOpenInventory().getTopInventory() != null) {
+                                    if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                                        if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
+                                            return;
+                                        }
+                                    } else {
+                                        if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+                                            if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
                                                 return;
-                                            }
-                                        } else {
-                                            if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-                                                if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-                                                    return;
-                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
 
-                            for (int i = 0; i <= 9; i++) {
-                                if (!(map.get(String.valueOf(i)) instanceof String)) {
-                                    Object entity = map.get(String.valueOf(i));
-                                    if (i == 5) {
-                                        InteractionVisualizer.lightManager.deleteLight(((ArmorStand) entity).getLocation());
-                                    }
-                                    if (entity instanceof Item) {
-                                        PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
-                                    } else if (entity instanceof ArmorStand) {
-                                        PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
-                                    }
+                        for (int i = 0; i <= 9; i++) {
+                            if (!(map.get(String.valueOf(i)) instanceof String)) {
+                                Object entity = map.get(String.valueOf(i));
+                                if (i == 5) {
+                                    InteractionVisualizer.lightManager.deleteLight(((ArmorStand) entity).getLocation());
+                                }
+                                if (entity instanceof Item) {
+                                    PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
+                                } else if (entity instanceof ArmorStand) {
+                                    PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
                                 }
                             }
-                            openedBenches.remove(block);
                         }
-                    }.runTaskLater(InteractionVisualizer.plugin, delay);
+                        openedBenches.remove(block);
+                    }, delay);
                 }
             }
         }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);

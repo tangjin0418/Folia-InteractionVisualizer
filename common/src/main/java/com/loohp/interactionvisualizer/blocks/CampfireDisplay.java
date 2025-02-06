@@ -158,13 +158,15 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyCampfire();
                 for (Block block : list) {
-                    if (campfireMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.CAMPFIRE)) {
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.putAll(spawnArmorStands(block));
-                            campfireMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (campfireMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.CAMPFIRE)) {
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.putAll(spawnArmorStands(block));
+                                campfireMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

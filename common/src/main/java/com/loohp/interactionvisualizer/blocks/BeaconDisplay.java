@@ -164,14 +164,16 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBeacon();
                 for (Block block : list) {
-                    if (beaconMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.BEACON)) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            beaconMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (beaconMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.BEACON)) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                beaconMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 

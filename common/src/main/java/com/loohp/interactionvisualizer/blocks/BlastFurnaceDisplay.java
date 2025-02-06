@@ -157,14 +157,16 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
             FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBlastFurnace();
                 for (Block block : list) {
-                    if (blastfurnaceMap.get(block) == null && isActive(block.getLocation())) {
-                        if (block.getType().equals(Material.BLAST_FURNACE)) {
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("Item", "N/A");
-                            map.putAll(spawnArmorStands(block));
-                            blastfurnaceMap.put(block, map);
+                    FoliaUtil.scheduler.runTask(block.getLocation(), () -> {
+                        if (blastfurnaceMap.get(block) == null && isActive(block.getLocation())) {
+                            if (block.getType().equals(Material.BLAST_FURNACE)) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("Item", "N/A");
+                                map.putAll(spawnArmorStands(block));
+                                blastfurnaceMap.put(block, map);
+                            }
                         }
-                    }
+                    });
                 }
             });
 
