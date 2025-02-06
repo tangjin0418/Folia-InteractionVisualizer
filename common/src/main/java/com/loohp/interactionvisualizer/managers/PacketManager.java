@@ -42,6 +42,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -159,7 +160,7 @@ public class PacketManager implements Listener {
     }
 
     public static void dynamicEntity() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<DynamicVisualizerEntity> itr = dynamicTracking.keySet().iterator();
             while (itr.hasNext()) {
                 DynamicVisualizerEntity entity = itr.next();
@@ -482,7 +483,7 @@ public class PacketManager implements Listener {
         };
 
         if (InteractionVisualizer.allPacketsSync) {
-            Bukkit.getScheduler().runTask(plugin, task);
+            FoliaUtil.scheduler.runTask(task);
         } else {
             InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(task);
         }
@@ -601,9 +602,9 @@ public class PacketManager implements Listener {
     }
 
     public static void reset(Player theplayer) {
-        Bukkit.getScheduler().runTask(plugin, () -> removeAll(theplayer));
+        FoliaUtil.scheduler.runTask(() -> removeAll(theplayer));
         int delay = 10 + (int) Math.ceil((double) active.size() / 5.0);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> sendPlayerPackets(theplayer), delay);
+        FoliaUtil.scheduler.runTaskLater(() -> sendPlayerPackets(theplayer), delay);
     }
 
     public static void removeAll(Player theplayer) {
@@ -624,13 +625,13 @@ public class PacketManager implements Listener {
                 }
                 VisualizerEntity entity = entry.getKey();
                 if (entity instanceof ArmorStand) {
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> removeArmorStand(player, (ArmorStand) entity, false, false), delay);
+                    FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> removeArmorStand(player, (ArmorStand) entity, false, false), delay);
                 }
                 if (entity instanceof Item) {
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> removeItem(player, (Item) entity, false, false), delay);
+                    FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> removeItem(player, (Item) entity, false, false), delay);
                 }
                 if (entity instanceof ItemFrame) {
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> removeItemFrame(player, (ItemFrame) entity, false, false), delay);
+                    FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> removeItemFrame(player, (ItemFrame) entity, false, false), delay);
                 }
             }
         });
@@ -657,19 +658,19 @@ public class PacketManager implements Listener {
                             count = 0;
                         }
                         if (entity instanceof ArmorStand) {
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> {
                                 sendArmorStandSpawn(player, (ArmorStand) entity);
                                 updateArmorStand(player, (ArmorStand) entity, true);
                             }, delay);
                         }
                         if (entity instanceof Item) {
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> {
                                 sendItemSpawn(player, (Item) entity);
                                 updateItem(player, (Item) entity, true);
                             }, delay);
                         }
                         if (entity instanceof ItemFrame) {
-                            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                            FoliaUtil.scheduler.runTaskLater(entity.getLocation(), () -> {
                                 sendItemFrameSpawn(player, (ItemFrame) entity);
                                 updateItemFrame(player, (ItemFrame) entity, true);
                             }, delay);

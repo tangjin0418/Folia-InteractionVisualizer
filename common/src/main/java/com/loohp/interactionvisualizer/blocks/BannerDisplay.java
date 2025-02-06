@@ -51,6 +51,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -92,8 +94,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
     }
 
     @Override
-    public int gc() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask gc() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, Map<String, Object>>> itr = bannerMap.entrySet().iterator();
             int count = 0;
             int maxper = (int) Math.ceil((double) bannerMap.size() / (double) gcPeriod);
@@ -105,7 +107,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
@@ -126,13 +128,13 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     }
                 }, delay);
             }
-        }, 0, gcPeriod).getTaskId();
+        }, 0, gcPeriod);
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBanner();
                 for (Block block : list) {
                     if (bannerMap.get(block) == null && isActive(block.getLocation())) {
@@ -158,7 +160,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     count = 0;
                     delay++;
                 }
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
@@ -207,7 +209,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     });
                 }, delay);
             }
-        }, 0, checkingPeriod).getTaskId();
+        }, 0, checkingPeriod);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

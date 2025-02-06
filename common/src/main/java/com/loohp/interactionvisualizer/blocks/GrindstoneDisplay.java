@@ -55,6 +55,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -258,7 +259,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         before.setItem(0, player.getOpenInventory().getItem(0).clone());
         before.setItem(1, player.getOpenInventory().getItem(1).clone());
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
             after.setItem(0, player.getOpenInventory().getItem(0).clone());
@@ -282,13 +283,13 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
             PacketManager.updateArmorStand(slot0);
             PacketManager.updateArmorStand(slot1);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-                for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+            for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+                FoliaUtil.scheduler.runTaskLater(each, () -> {
                     each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
-                }
-            }, 6);
+                }, 6);
+            }
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                 Vector lift = new Vector(0.0, 0.15, 0.0);
                 Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
                 item.setItemStack(itemstack);
@@ -297,7 +298,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
                 item.setPickupDelay(32767);
                 PacketManager.updateItem(item);
 
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                     SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                     PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);
                     PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);

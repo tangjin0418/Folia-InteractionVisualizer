@@ -54,6 +54,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.util.EulerAngle;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -102,8 +104,8 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
     }
 
     @Override
-    public int gc() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask gc() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, Map<String, Object>>> itr = beaconMap.entrySet().iterator();
             int count = 0;
             int maxper = (int) Math.ceil((double) beaconMap.size() / (double) gcPeriod);
@@ -115,7 +117,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
@@ -153,13 +155,13 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
                     }
                 }, delay);
             }
-        }, 0, gcPeriod).getTaskId();
+        }, 0, gcPeriod);
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBeacon();
                 for (Block block : list) {
                     if (beaconMap.get(block) == null && isActive(block.getLocation())) {
@@ -185,7 +187,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
                     count = 0;
                     delay++;
                 }
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
@@ -289,7 +291,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
                     });
                 }, delay);
             }
-        }, 0, checkingPeriod).getTaskId();
+        }, 0, checkingPeriod);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

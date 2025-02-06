@@ -47,6 +47,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -160,7 +161,7 @@ public class EnchantmentTableAnimation {
             each.spawnParticle(Particle.PORTAL, location.clone().add(0.5, 2.6, 0.5), 200);
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
             item.teleport(location.clone().add(0.5, 2.3, 0.5));
             item.setVelocity(new Vector(0, 0, 0));
             PacketManager.updateItem(item);
@@ -168,7 +169,7 @@ public class EnchantmentTableAnimation {
 
         List<ArmorStand> stands = new LinkedList<>();
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
             Location standloc = item.getLocation().add(0.0, 0.5, 0.0);
             for (Entry<Enchantment, Integer> entry : enchantsToAdd.entrySet()) {
                 Enchantment ench = entry.getKey();
@@ -220,7 +221,7 @@ public class EnchantmentTableAnimation {
             PacketManager.updateItem(item);
         }, 50);
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
             while (!stands.isEmpty()) {
                 ArmorStand stand = stands.remove(0);
                 PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -229,7 +230,7 @@ public class EnchantmentTableAnimation {
             PacketManager.updateItem(item);
         }, 90);
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
             item.teleport(location.clone().add(0.5, 1.3, 0.5));
             item.setGravity(false);
             PacketManager.updateItem(item);
@@ -263,7 +264,7 @@ public class EnchantmentTableAnimation {
         item.setPickupDelay(32767);
         PacketManager.updateItem(item);
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
             SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
             PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
             this.item = Optional.empty();
@@ -274,7 +275,7 @@ public class EnchantmentTableAnimation {
 
     private CompletableFuture<Integer> close() {
         CompletableFuture<Integer> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        FoliaUtil.scheduler.runTask(() -> {
             if (this.item.isPresent()) {
                 PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item.get());
             }
@@ -286,7 +287,7 @@ public class EnchantmentTableAnimation {
     private CompletableFuture<Integer> setItemStack(ItemStack itemstack) {
         CompletableFuture<Integer> future = new CompletableFuture<>();
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        FoliaUtil.scheduler.runTask(() -> {
             if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
                 clearItemStack();
                 future.complete(SET_ITEM);

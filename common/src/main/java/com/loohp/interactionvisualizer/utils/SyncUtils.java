@@ -23,6 +23,7 @@ package com.loohp.interactionvisualizer.utils;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.Condition;
 import org.bukkit.Bukkit;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 public class SyncUtils {
 
@@ -32,7 +33,7 @@ public class SyncUtils {
                 InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
             }
         } else if (InteractionVisualizer.plugin.isEnabled()) {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 if (syncCondition.check()) {
                     InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
                 }

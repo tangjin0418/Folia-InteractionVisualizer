@@ -36,3 +36,5 @@ permissions:
   interactionvisualizer.update:
     description: Allows you receive update messages
     default: op
+
+folia-supported: true

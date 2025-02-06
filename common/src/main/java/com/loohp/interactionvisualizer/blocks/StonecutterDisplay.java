@@ -49,8 +49,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.StonecutterInventory;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,8 +71,8 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
     }
 
     @Override
-    public int run() {
-        return new BukkitRunnable() {
+    public MyScheduledTask run() {
+        return new UniversalRunnable() {
             public void run() {
 
                 Iterator<Block> itr = openedStonecutter.keySet().iterator();
@@ -84,7 +86,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
                         delay++;
                     }
                     Block block = itr.next();
-                    new BukkitRunnable() {
+                    new UniversalRunnable() {
                         public void run() {
                             if (!openedStonecutter.containsKey(block)) {
                                 return;
@@ -112,7 +114,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
                     }.runTaskLater(InteractionVisualizer.plugin, delay);
                 }
             }
-        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);
     }
 
     @Override
@@ -175,14 +177,12 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 
         if (itemstack != null) {
             ItemStack itempar = itemstack.clone();
-            int taskid = new BukkitRunnable() {
+            MyScheduledTask task = FoliaUtil.scheduler.runTaskTimer(player, () -> {
+                player.getWorld().spawnParticle(NMS.getInstance().getItemCrackParticle(), loc.clone().add(0.5, 0.7, 0.5), 25, 0.1, 0.1, 0.1, 0.1, itempar);
+            }, 0, 1);
+            new UniversalRunnable() {
                 public void run() {
-                    player.getWorld().spawnParticle(NMS.getInstance().getItemCrackParticle(), loc.clone().add(0.5, 0.7, 0.5), 25, 0.1, 0.1, 0.1, 0.1, itempar);
-                }
-            }.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
-            new BukkitRunnable() {
-                public void run() {
-                    Bukkit.getScheduler().cancelTask(taskid);
+                    task.cancel();
                 }
             }.runTaskLater(InteractionVisualizer.plugin, 4);
         }
@@ -280,7 +280,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
         Inventory before = Bukkit.createInventory(null, 9);
         before.setItem(0, player.getOpenInventory().getItem(0).clone());
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
             after.setItem(0, player.getOpenInventory().getItem(0).clone());
@@ -302,7 +302,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
             item.setPickupDelay(32767);
             PacketManager.updateItem(item);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                 SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                 PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
             }, 8);

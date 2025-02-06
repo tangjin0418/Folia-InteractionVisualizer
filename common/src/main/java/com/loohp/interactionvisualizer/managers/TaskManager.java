@@ -67,6 +67,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -443,7 +444,7 @@ public class TaskManager {
                 delay++;
             }
             UUID uuid = eachPlayer.getUniqueId();
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(eachPlayer, () -> {
                 Player player = Bukkit.getPlayer(uuid);
                 if (player == null) {
                     return;
@@ -453,7 +454,7 @@ public class TaskManager {
             }, delay);
         }
         next = next + delay;
-        Bukkit.getScheduler().runTaskLater(plugin, () -> run(), next);
+        FoliaUtil.scheduler.runTaskLater(() -> run(), next);
     }
 
     private static YamlConfiguration getConfig() {

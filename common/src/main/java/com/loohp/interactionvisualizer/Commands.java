@@ -40,6 +40,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (player.hasPermission("interactionvisualizer.refresh")) {
-                    Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
+                    FoliaUtil.scheduler.runTask(player, () -> PacketManager.reset(player));
                 } else {
                     sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.NoPermission")));
                 }

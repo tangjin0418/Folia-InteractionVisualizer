@@ -48,6 +48,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -66,13 +68,13 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
     }
 
     @Override
-    public int gc() {
-        return -1;
+    public MyScheduledTask gc() {
+        return null;
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, ConcurrentHashMap<String, Object>>> itr = displayingNotes.entrySet().iterator();
             while (itr.hasNext()) {
                 Entry<Block, ConcurrentHashMap<String, Object>> entry = itr.next();
@@ -80,11 +82,11 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
                 long timeout = (long) entry.getValue().get("Timeout");
                 if (unix > timeout) {
                     ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-                    Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand));
+                    FoliaUtil.scheduler.runTask(stand.getLocation(), () -> PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand));
                     itr.remove();
                 }
             }
-        }, 0, 20).getTaskId();
+        }, 0, 20);
     }
 
     @SuppressWarnings("deprecation")
@@ -110,7 +112,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 
         BlockFace face = event.getBlockFace();
         Location textLocation = getFaceOffset(block, face);
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(block.getLocation(), () -> {
             if (!block.getType().equals(Material.NOTE_BLOCK)) {
                 return;
             }

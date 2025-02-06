@@ -47,6 +47,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.plugin.Plugin;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -71,7 +72,7 @@ public class TileEntityManager implements Listener {
         }
         TileEntityManager instance = new TileEntityManager();
         Bukkit.getPluginManager().registerEvents(instance, plugin);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             for (TileEntityType type : tileEntityTypes) {
                 Set<Block> blocks = active.get(type);
                 blocks.removeIf(block -> !PlayerLocationManager.hasPlayerNearby(block.getLocation()));
@@ -206,14 +207,14 @@ public class TileEntityManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreakBlock(BlockBreakEvent event) {
         if (TileEntity.isTileEntityType(event.getBlock().getType())) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
+            FoliaUtil.scheduler.runTaskLater(event.getBlock().getLocation(), () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlaceBlock(BlockPlaceEvent event) {
         if (TileEntity.isTileEntityType(event.getBlock().getType())) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
+            FoliaUtil.scheduler.runTaskLater(event.getBlock().getLocation(), () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
         }
     }
 
@@ -228,7 +229,7 @@ public class TileEntityManager implements Listener {
                 chunks.add(getChunk(block.getLocation()));
             }
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> addTileEntities(chunks), 1);
+        FoliaUtil.scheduler.runTaskLater(event.getBlock().getLocation(), () -> addTileEntities(chunks), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -239,13 +240,13 @@ public class TileEntityManager implements Listener {
                 chunks.add(getChunk(block.getLocation()));
             }
         }
-        Bukkit.getScheduler().runTaskLater(plugin, () -> addTileEntities(chunks), 1);
+        FoliaUtil.scheduler.runTaskLater(event.getLocation(), () -> addTileEntities(chunks), 1);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityChangeBlock(EntityChangeBlockEvent event) {
         if (TileEntity.isTileEntityType(event.getBlock().getType())) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
+            FoliaUtil.scheduler.runTaskLater(event.getEntity().getLocation(), () -> addTileEntities(getChunk(event.getBlock().getLocation())), 1);
         }
     }
 

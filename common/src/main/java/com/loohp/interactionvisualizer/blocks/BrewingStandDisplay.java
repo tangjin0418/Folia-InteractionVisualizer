@@ -50,6 +50,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -92,8 +94,8 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
     }
 
     @Override
-    public int gc() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask gc() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, Map<String, Object>>> itr = brewstand.entrySet().iterator();
             int count = 0;
             int maxper = (int) Math.ceil((double) brewstand.size() / (double) gcPeriod);
@@ -105,7 +107,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
@@ -135,13 +137,13 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
                     }
                 }, delay);
             }
-        }, 0, gcPeriod).getTaskId();
+        }, 0, gcPeriod);
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBrewingStand();
                 for (Block block : list) {
                     if (brewstand.get(block) == null && isActive(block.getLocation())) {
@@ -167,7 +169,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
                     count = 0;
                     delay++;
                 }
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
@@ -267,7 +269,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
                     });
                 }, delay);
             }
-        }, 0, checkingPeriod).getTaskId();
+        }, 0, checkingPeriod);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

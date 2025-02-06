@@ -52,6 +52,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +228,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
                 List<Item> list = link.get(player);
                 list.add(item);
                 boolean finalIsIn = isIn;
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                     if (finalIsIn) {
                         item.teleport(loc.clone().add(0.5, 1, 0.5));
                     } else {
@@ -237,7 +238,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
                     item.setGravity(false);
                     PacketManager.updateItem(item);
                 }, 8);
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                     PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
                     list.remove(item);
                 }, 20);
@@ -334,13 +335,13 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
                     }
                     List<Item> list = link.get(player);
                     list.add(item);
-                    Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                    FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                         item.teleport(loc.clone().add(0.5, 1, 0.5));
                         item.setVelocity(new Vector(0.0, 0.0, 0.0));
                         item.setGravity(false);
                         PacketManager.updateItem(item);
                     }, 8);
-                    Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                    FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                         PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
                         list.remove(item);
                     }, 20);

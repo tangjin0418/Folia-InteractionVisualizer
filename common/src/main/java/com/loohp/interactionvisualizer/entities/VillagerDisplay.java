@@ -42,6 +42,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.Objects;
 
@@ -129,11 +130,11 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
             PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), in);
             PacketManager.updateItem(in);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
+            FoliaUtil.scheduler.runTaskLater(in.getLocation(), () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
         }
 
         ItemStack item1final = item1;
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
             if (item1final != null) {
                 Item in = new Item(player.getEyeLocation());
                 Vector vector = villager.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
@@ -143,11 +144,11 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
                 PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), in);
                 PacketManager.updateItem(in);
 
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
+                FoliaUtil.scheduler.runTaskLater(in.getLocation(), () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
             }
         }, 8);
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(villager, () -> {
             Item out = new Item(villager.getEyeLocation());
             Vector vector = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(villager.getEyeLocation().toVector()).multiply(0.10).add(lift);
             out.setItemStack(item2);
@@ -156,7 +157,7 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
             PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), out);
             PacketManager.updateItem(out);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), out), 12);
+            FoliaUtil.scheduler.runTaskLater(out.getLocation(), () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), out), 12);
         }, 40);
     }
 

@@ -46,6 +46,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.EulerAngle;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,8 +85,8 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     @Override
-    public int gc() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask gc() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, Map<String, Object>>> itr = conduitMap.entrySet().iterator();
             int count = 0;
             int maxper = (int) Math.ceil((double) conduitMap.size() / (double) gcPeriod);
@@ -96,7 +98,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
@@ -126,13 +128,13 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
                     }
                 }, delay);
             }
-        }, 0, gcPeriod).getTaskId();
+        }, 0, gcPeriod);
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyConduit();
                 for (Block block : list) {
                     if (conduitMap.get(block) == null && isActive(block.getLocation())) {
@@ -158,7 +160,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
                     count = 0;
                     delay++;
                 }
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
@@ -201,7 +203,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
                     });
                 }, delay);
             }
-        }, 0, checkingPeriod).getTaskId();
+        }, 0, checkingPeriod);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

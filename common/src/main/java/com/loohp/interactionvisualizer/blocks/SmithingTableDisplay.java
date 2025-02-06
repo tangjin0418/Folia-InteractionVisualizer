@@ -58,6 +58,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.SmithingInventory;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -278,7 +279,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             before.setItem(i, player.getOpenInventory().getItem(i).clone());
         }
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
             for (int i = 0; i <= maxSlot; i++) {
@@ -309,13 +310,13 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             PacketManager.updateArmorStand(slot1);
             PacketManager.updateArmorStand(slot2);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-                for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+            for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+                FoliaUtil.scheduler.runTaskLater(each, () -> {
                     each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
-                }
-            }, 6);
+                }, 6);
+            }
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(player, () -> {
                 Vector lift = new Vector(0.0, 0.15, 0.0);
                 Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
                 item.setItemStack(itemstack);
@@ -324,7 +325,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
                 item.setPickupDelay(32767);
                 PacketManager.updateItem(item);
 
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                     SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                     if (slot0 != null) {
                         PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);

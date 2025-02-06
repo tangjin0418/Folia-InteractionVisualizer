@@ -25,6 +25,7 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,7 +39,7 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
      * DO NOT CHANGE THESE FIELD
      */
     private InventoryType[] types;
-    private Set<Integer> tasks;
+    private Set<MyScheduledTask> tasks;
 
     /**
      * This method will be called whenever a player opens the InventoryType registered.
@@ -48,8 +49,8 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
     /**
      * This method is used if you need a runnable, return the task id, return -1 to disable
      */
-    public int run() {
-        return -1;
+    public MyScheduledTask run() {
+        return null;
     }
 
     /**
@@ -88,8 +89,8 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
             TaskManager.processes.get(type).add(this);
         }
         this.tasks = new HashSet<>();
-        int run = run();
-        if (run >= 0) {
+        MyScheduledTask run = run();
+        if (run != null) {
             this.tasks.add(run);
         }
     }
@@ -107,8 +108,8 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
             TaskManager.processes.get(type).add(this);
         }
         this.tasks = new HashSet<>();
-        int run = run();
-        if (run >= 0) {
+        MyScheduledTask run = run();
+        if (run != null) {
             this.tasks.add(run);
         }
         return key();
@@ -123,7 +124,7 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
         for (InventoryType type : types) {
             TaskManager.processes.get(type).remove(this);
         }
-        this.tasks.forEach(each -> Bukkit.getScheduler().cancelTask(each));
+        this.tasks.forEach(MyScheduledTask::cancel);
     }
 
 }

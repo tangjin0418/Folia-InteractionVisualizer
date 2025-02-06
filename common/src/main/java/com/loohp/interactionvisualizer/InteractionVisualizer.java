@@ -24,15 +24,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.database.Database;
-import com.loohp.interactionvisualizer.managers.AsyncExecutorManager;
-import com.loohp.interactionvisualizer.managers.LangManager;
-import com.loohp.interactionvisualizer.managers.LightManager;
-import com.loohp.interactionvisualizer.managers.MaterialManager;
-import com.loohp.interactionvisualizer.managers.MusicManager;
-import com.loohp.interactionvisualizer.managers.PacketManager;
-import com.loohp.interactionvisualizer.managers.PreferenceManager;
-import com.loohp.interactionvisualizer.managers.TaskManager;
-import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.managers.*;
 import com.loohp.interactionvisualizer.metrics.Charts;
 import com.loohp.interactionvisualizer.metrics.Metrics;
 import com.loohp.interactionvisualizer.nms.NMS;
@@ -56,6 +48,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,12 +58,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class InteractionVisualizer extends JavaPlugin {
@@ -242,10 +230,10 @@ public class InteractionVisualizer extends JavaPlugin {
         exemptBlocks.add("SPAWNER");
         exemptBlocks.add("MOB_SPAWNER");
         exemptBlocks.add("BEACON");
-        
+
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 
-        Bukkit.getScheduler().runTask(this, () -> {
+        FoliaUtil.scheduler.runTask(() -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 PacketManager.playerStatus.put(player, ConcurrentHashMap.newKeySet());
             }

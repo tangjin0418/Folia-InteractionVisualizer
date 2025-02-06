@@ -21,14 +21,15 @@
 package com.loohp.interactionvisualizer.objectholders;
 
 import org.bukkit.Location;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 public interface ILightManager {
 
     ILightManager DUMMY_INSTANCE = new ILightManager() {
 
         @Override
-        public int run() {
-            return -1;
+        public MyScheduledTask run() {
+            return null;
         }
 
         @Override
@@ -46,6 +47,6 @@ public interface ILightManager {
 
     void deleteLight(Location location);
 
-    int run();
+    MyScheduledTask run();
 
 }

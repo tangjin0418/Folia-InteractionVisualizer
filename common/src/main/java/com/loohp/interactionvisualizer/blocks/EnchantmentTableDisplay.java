@@ -47,6 +47,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -133,7 +134,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 
         ItemStack itemstack = view.getItem(0) != null && !view.getItem(0).getType().equals(Material.AIR) ? view.getItem(0).clone() : null;
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(block.getLocation(), () -> {
             if (!animation.isEnchanting()) {
                 animation.queueSetItem(itemstack, a -> {
                     InventoryView inventory = player.getOpenInventory();
@@ -160,7 +161,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         Block block = event.getEnchantBlock();
         Player player = event.getEnchanter();
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
             if (!player.getOpenInventory().getTopInventory().getType().equals(InventoryType.ENCHANTING)) {
                 return;
             }
@@ -229,7 +230,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         ItemStack itemstack = event.getCurrentItem().clone();
         int slot = event.getRawSlot();
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
             if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
                 return;
             }
@@ -290,7 +291,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 
         ItemStack itemstack = event.getView().getItem(0) != null ? (!event.getView().getItem(0).getType().equals(Material.AIR) ? event.getView().getItem(0).clone() : null) : null;
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(block.getLocation(), () -> {
             EnchantmentTableAnimation animation = EnchantmentTableAnimation.getTableAnimation(block, player);
             if (animation == null) {
                 return;

@@ -56,9 +56,11 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,8 +79,8 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
     }
 
     @Override
-    public int run() {
-        return new BukkitRunnable() {
+    public MyScheduledTask run() {
+        return new UniversalRunnable() {
             public void run() {
                 Iterator<Block> itr = openedBenches.keySet().iterator();
                 int count = 0;
@@ -91,7 +93,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                         delay++;
                     }
                     Block block = itr.next();
-                    new BukkitRunnable() {
+                    new UniversalRunnable() {
                         public void run() {
                             if (!openedBenches.containsKey(block)) {
                                 return;
@@ -135,7 +137,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                     }.runTaskLater(InteractionVisualizer.plugin, delay);
                 }
             }
-        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);
     }
 
     @Override
@@ -361,7 +363,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
             before.setItem(i - 1, player.getOpenInventory().getItem(i).clone());
         }
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
             for (int i = 1; i < 10; i++) {
@@ -407,13 +409,13 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
             PacketManager.updateArmorStand(slot8);
             PacketManager.updateArmorStand(slot9);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-                for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+            for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
+                FoliaUtil.scheduler.runTaskLater(each, () -> {
                     each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
-                }
-            }, 6);
+                }, 6);
+            }
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(player, () -> {
                 Vector lift = new Vector(0.0, 0.15, 0.0);
                 Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
                 item.setItemStack(itemstack);
@@ -422,7 +424,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                 item.setPickupDelay(32767);
                 PacketManager.updateItem(item);
 
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                     SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                     PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);
                     PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot2);
@@ -497,7 +499,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                         PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
                     }
                     int finalI = i;
-                    new BukkitRunnable() {
+                    new UniversalRunnable() {
                         public void run() {
                             if (finalI == 5) {
                                 InteractionVisualizer.lightManager.deleteLight(((ArmorStand) entity).getLocation());

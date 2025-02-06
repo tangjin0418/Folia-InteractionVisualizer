@@ -59,6 +59,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -103,8 +105,8 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
     }
 
     @Override
-    public int gc() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask gc() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
             Iterator<Entry<Block, Map<String, Object>>> itr = blastfurnaceMap.entrySet().iterator();
             int count = 0;
             int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) gcPeriod);
@@ -116,7 +118,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
@@ -146,13 +148,13 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
                     }
                 }, delay);
             }
-        }, 0, gcPeriod).getTaskId();
+        }, 0, gcPeriod);
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimerAsynchronously(() -> {
+            FoliaUtil.scheduler.runTask(() -> {
                 Set<Block> list = nearbyBlastFurnace();
                 for (Block block : list) {
                     if (blastfurnaceMap.get(block) == null && isActive(block.getLocation())) {
@@ -178,7 +180,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
                     count = 0;
                     delay++;
                 }
-                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                FoliaUtil.scheduler.runTaskLater(entry.getKey().getLocation(), () -> {
                     Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
@@ -289,7 +291,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
                     });
                 }, delay);
             }
-        }, 0, checkingPeriod).getTaskId();
+        }, 0, checkingPeriod);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -367,7 +369,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
         Location loc = block.getLocation();
         Player player = (Player) event.getWhoClicked();
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
                 return;
@@ -390,7 +392,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
             item.setPickupDelay(32767);
             PacketManager.updateItem(item);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                 SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                 PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
             }, 8);

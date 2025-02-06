@@ -44,7 +44,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.CartographyInventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,8 +64,8 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
     }
 
     @Override
-    public int run() {
-        return new BukkitRunnable() {
+    public MyScheduledTask run() {
+        return new UniversalRunnable() {
             public void run() {
 
                 Iterator<Block> itr = openedCTable.keySet().iterator();
@@ -78,7 +79,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
                         delay++;
                     }
                     Block block = itr.next();
-                    new BukkitRunnable() {
+                    new UniversalRunnable() {
                         public void run() {
                             if (!openedCTable.containsKey(block)) {
                                 return;
@@ -106,7 +107,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
                     }.runTaskLater(InteractionVisualizer.plugin, delay);
                 }
             }
-        }.runTaskTimer(InteractionVisualizer.plugin, 0, 6).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 6);
     }
 
     @Override

@@ -50,9 +50,11 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -70,8 +72,8 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
     }
 
     @Override
-    public int run() {
-        return new BukkitRunnable() {
+    public MyScheduledTask run() {
+        return new UniversalRunnable() {
             public void run() {
 
                 Iterator<Block> itr = openedLooms.keySet().iterator();
@@ -85,7 +87,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
                         delay++;
                     }
                     Block block = itr.next();
-                    new BukkitRunnable() {
+                    new UniversalRunnable() {
                         public void run() {
                             if (!openedLooms.containsKey(block)) {
                                 return;
@@ -114,7 +116,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
                     }.runTaskLater(InteractionVisualizer.plugin, delay);
                 }
             }
-        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);
     }
 
     @Override
@@ -277,7 +279,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         before.setItem(1, player.getOpenInventory().getItem(1).clone());
         before.setItem(2, player.getOpenInventory().getItem(2).clone());
 
-        Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+        FoliaUtil.scheduler.runTaskLater(player, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
             after.setItem(0, player.getOpenInventory().getItem(0).clone());
@@ -304,7 +306,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
             PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
             PacketManager.updateItem(item);
 
-            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+            FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
                 SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
                 PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
             }, 8);
@@ -414,11 +416,9 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
                 item.setPickupDelay(32767);
                 PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
                 PacketManager.updateItem(item);
-                new BukkitRunnable() {
-                    public void run() {
-                        PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
-                    }
-                }.runTaskLater(InteractionVisualizer.plugin, 8);
+                FoliaUtil.scheduler.runTaskLater(item.getLocation(), () -> {
+                    PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
+                }, 8);
             }
         }
 

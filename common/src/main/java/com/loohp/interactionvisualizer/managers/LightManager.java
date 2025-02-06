@@ -25,6 +25,8 @@ import com.loohp.interactionvisualizer.objectholders.ILightManager;
 import com.loohp.interactionvisualizer.objectholders.LightData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;
 import ru.beykerykt.lightapi.chunks.ChunkInfo;
@@ -73,8 +75,8 @@ public class LightManager implements ILightManager {
     }
 
     @Override
-    public int run() {
-        return Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+    public MyScheduledTask run() {
+        return FoliaUtil.scheduler.runTaskTimer(() -> {
             boolean changed = false;
 
             Queue<LightData> updateQueue = new LinkedList<>();
@@ -142,7 +144,7 @@ public class LightManager implements ILightManager {
                     LightAPI.updateChunk(info, LightType.BLOCK);
                 }
             }
-        }, 0, InteractionVisualizer.lightUpdatePeriod).getTaskId();
+        }, 0, InteractionVisualizer.lightUpdatePeriod);
     }
 
 }

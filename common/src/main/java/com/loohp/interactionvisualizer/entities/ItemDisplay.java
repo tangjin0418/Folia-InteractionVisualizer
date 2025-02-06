@@ -51,7 +51,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -125,13 +126,13 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
     }
 
     @Override
-    public int gc() {
-        return -1;
+    public MyScheduledTask gc() {
+        return null;
     }
 
     @Override
-    public int run() {
-        return new BukkitRunnable() {
+    public MyScheduledTask run() {
+        return new UniversalRunnable() {
             int i = 0;
 
             @Override
@@ -153,7 +154,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                     }
                 }
             }
-        }.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 1);
     }
 
     private void tick(Item item, Collection<Item> items) {
