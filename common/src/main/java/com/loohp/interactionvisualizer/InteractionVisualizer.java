@@ -61,6 +61,8 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+import static org.tjdev.util.tjpluginutil.spigot.object.task.Scope.Sync;
+
 public class InteractionVisualizer extends JavaPlugin {
 
     public static final int BSTATS_PLUGIN_ID = 7024;
@@ -187,11 +189,13 @@ public class InteractionVisualizer extends JavaPlugin {
         defaultWorld = new WeakReference<>(getServer().getWorlds().get(0));
         defaultLocation = new Location(getDefaultWorld(), 0, 0, 0);
         if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
-            getDefaultWorld().setChunkForceLoaded(0, 0, true);
+            Sync(new Location(getDefaultWorld(),0, 0, 0), () -> {
+                getDefaultWorld().setChunkForceLoaded(0, 0, true);
+            });
         }
 
         if (getConfiguration().getBoolean("Options.DownloadLanguageFiles")) {
-            getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
+            FoliaUtil.scheduler.runTaskAsynchronously(() -> LangManager.generate());
         }
 
         MusicManager.setup();
